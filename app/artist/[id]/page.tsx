@@ -4,6 +4,7 @@ import { useAuth } from "@/src/context/AuthContext";
 import { useEffect, useState } from "react";
 import { getSimilarArtists } from "@/src/hooks/useLastFmApi";
 import { useSpotifyApi } from "@/src/hooks/useSpotifyApi";
+import { useSpotifyFeatures } from "@/src/features/spotify/useSpotifyFeatures";
 import { getRandomResults } from "@/src/utils/getRandom";
 import { handleize } from "@/src/utils/handleize";
 import { batchRequests } from "@/src/utils/batchRequests";
@@ -14,8 +15,9 @@ export default function ArtistInfo () {
 	const [artistData, setArtistData] = useState<Record<string, any>>({});
 	const [similarArtists, setSimilarArtists] = useState([]);
 	const [topTracks, setTopTracks] = useState([])
-	const { getArtist, getArtistTopTracks, createPlaylist, makeSearchRequest } =
-    useSpotifyApi();
+	const { getArtist, getArtistTopTracks, makeSearchRequest } =
+    useSpotifyApi()!;
+  const { createPlaylistAndAddSongs } = useSpotifyFeatures()!;
 
 	useEffect(() => {
 		const id = window.location.pathname.split("artist/")[1];
@@ -84,9 +86,9 @@ export default function ArtistInfo () {
       .flatMap((t) => t.tracks)
       .map((track) => track.uri);
 
-    const uniqueUris = [...new Set(getRandomResults(songUris, 100))].map((uri) => uri.value);
+    const uniqueUris = [...new Set(getRandomResults(songUris, 100))];
 
-    await createPlaylist(
+    await createPlaylistAndAddSongs(
       uniqueUris,
       `${artistData?.name} Similar Artists ${Date.now()}`,
       "This is a new playlist!"
