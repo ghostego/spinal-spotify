@@ -1,6 +1,5 @@
 'use client'
 
-import { makeSearchRequest } from "@/src/hooks/getData";
 import { useAuth } from "@/src/context/AuthContext";
 import { useEffect, useState } from "react";
 import { getSimilarArtists } from "@/src/hooks/useLastFmApi";
@@ -15,7 +14,8 @@ export default function ArtistInfo () {
 	const [artistData, setArtistData] = useState<Record<string, any>>({});
 	const [similarArtists, setSimilarArtists] = useState([]);
 	const [topTracks, setTopTracks] = useState([])
-	const { getArtist, getArtistTopTracks, createPlaylist } = useSpotifyApi();
+	const { getArtist, getArtistTopTracks, createPlaylist, makeSearchRequest } =
+    useSpotifyApi();
 
 	useEffect(() => {
 		const id = window.location.pathname.split("artist/")[1];
@@ -54,7 +54,7 @@ export default function ArtistInfo () {
 
     const searchRequests = randomResults.map((result) => {
       requestedArtistsData[result.name] = result;
-      return () => makeSearchRequest(result.name, "artist", accessToken);
+      return () => makeSearchRequest(result.name, "artist");
     });
 
     // Throttle search requests

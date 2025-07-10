@@ -1,10 +1,10 @@
 'use client'
 
-import { makeSearchRequest } from "@/src/hooks/getData";
 import { useState } from "react";
 import { useAuth } from "@/src/context/AuthContext";
 import Link from "next/link";
 import Image from "next/image";
+import { useSpotifyApi } from "@/src/hooks/useSpotifyApi";
 
 
 export default function Search () {
@@ -12,6 +12,7 @@ export default function Search () {
 	const [searchTerm, setSearchTerm] = useState("");
 	const [searchType, setSearchType] = useState<string[]>([])
 	const [searchResults, setSearchResults] = useState<Record<string, any>>({});
+  const { makeSearchRequest } = useSpotifyApi();
 
 	const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setSearchTerm(e?.target?.value);
@@ -26,7 +27,7 @@ export default function Search () {
 
 	const onSearchSubmit = () => {
 		if (!searchTerm || !searchType || !accessToken) return;
-		makeSearchRequest(searchTerm, searchType.join(","), accessToken).then((results) => {
+		makeSearchRequest(searchTerm, searchType.join(",")).then((results) => {
 			setSearchResults(results);
 		})
 	}

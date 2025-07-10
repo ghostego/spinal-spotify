@@ -130,6 +130,20 @@ export const useSpotifyApi = () => {
     const response = await fetcher(url.toString(), {}, accessToken!);
     return response;
 	};
+
+  // SEARCH REQUEST //
+
+  const makeSearchRequest = async (
+    query: string,
+    type: string,
+  ) => {
+    const url = new URL(
+      `https://api.spotify.com/v1/search?q=${query}&type=${type}`
+    );
+
+    const response = await fetcher(url.toString(), {}, accessToken!);
+    return response;
+  };
 	
   return {
     addSongsToPlaylist,
@@ -140,5 +154,6 @@ export const useSpotifyApi = () => {
     unfollowPlaylist,
     getArtist,
     getArtistTopTracks,
+    makeSearchRequest,
   };
 }
