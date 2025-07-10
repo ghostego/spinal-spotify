@@ -3,7 +3,6 @@
 import { useEffect, useState, useCallback } from "react"
 import { init, access } from "@/src/hooks/init"
 import { useAuth } from "@/src/context/AuthContext"
-import { request as LastFMRequest } from "@/src/hooks/useLastFmApi"
 import { setStorageWithExpiration } from "@/src/utils/localStorage"
 import Image from "next/image";
 import Link from "next/link";
@@ -13,6 +12,8 @@ export default function Home() {
   const { setAuthData, profile, accessToken  } = useAuth()
   const [topArtists, setTopArtists] = useState([]);
   const [timeFrame, setTimeFrame] = useState("medium_term");
+  // const [topArtistTimeFrame, setTopArtistTimeFrame] = useState("medium_term");
+  // const [topSongsTimeFrame, setTopSongsTimeFrame] = useState("medium_term")
   const [topSongs, setTopSongs] = useState([]);
 
   const getTopArtists = useCallback(() => {
@@ -61,9 +62,9 @@ export default function Home() {
   if (!profile) {
     return (
       <main className="p-4 w-full h-screen">
-        <div className="flex flex-row gap-4 space-between items-center justify-center h-full">
+        <div className="flex flex-row gap-4 space-between items-center justify-center h-full w-full">
           <button
-            className="border border-red-900 color-red-900 px-5 py-4"
+            className="btn"
             onClick={() => init(setAuthData)}
           >
             Init
@@ -74,20 +75,26 @@ export default function Home() {
   }
 
   return (
-    <div className="p-4">
-      <h3 className="text-lg mb-4">Profile</h3>
-      <div className="flex gap-2">
-        <Image
-          alt={profile.display_name}
-          src={profile?.images?.[0].url}
-          height={200}
-          width={200}
-        />
-        <div className="flex flex-col">
-          <h2 className="text-xl">{profile?.display_name}</h2>
-          <h4 className="text-md">{profile?.followers?.total} followers</h4>
-          <h4 className="text-md">{profile?.email}</h4>
-          <h4 className="text-md">{profile?.id}</h4>
+    <div className="p-4 w-full">
+      <div className="flex gap-4 border border-white p-4 justify-between items-center">
+        <div className="flex gap-4">
+          <Image
+            alt={profile.display_name}
+            src={profile?.images?.[0].url}
+            height={100}
+            width={100}
+          />
+          <div className="flex flex-col gap-1 justify-center">
+            <h4 className="text-sm">{profile?.id}</h4>
+            <h2 className="text-lg mb-0.5">{profile?.display_name}</h2>
+            <h4 className="text-xs">{profile?.followers?.total} followers</h4>
+          </div>
+        </div>
+        <div className="flex flex-col gap-2">
+          <Link className="btn" href={profile?.external_urls?.spotify || ""}>
+            Spotify Profile
+          </Link>
+          <Link className="btn" href={"/playlist"}>View Playlists</Link>
         </div>
       </div>
       <div className="flex gap-4">

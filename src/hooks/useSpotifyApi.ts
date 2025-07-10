@@ -4,8 +4,30 @@ import { buildSpotifyUrl } from "../utils/url";
 
 export const useSpotifyApi = () => {
   const { accessToken, profile } = useAuth();
+  
+  const createMissingTokenHandler = (methodName: string) => {
+    return async () => {
+      throw new Error(`Missing access token: ${methodName} cannot be called`);
+    };
+  };
 
-  if (!accessToken) return;
+  if (!accessToken) {
+    return {
+      addSongsToPlaylist: createMissingTokenHandler("Missing access token"),
+      createPlaylist: createMissingTokenHandler("Missing access token"),
+      getPlaylists: createMissingTokenHandler("Missing access token"),
+      getPlaylist: createMissingTokenHandler("Missing access token"),
+      getPlaylistTracks: createMissingTokenHandler("Missing access token"),
+      unfollowPlaylist: createMissingTokenHandler("Missing access token"),
+      getArtist: createMissingTokenHandler("Missing access token"),
+      getArtistTopTracks: createMissingTokenHandler("Missing access token"),
+      makeSearchRequest: createMissingTokenHandler("Missing access token"),
+      getTopArtists: createMissingTokenHandler("Missing access token"),
+      getTopTracks: createMissingTokenHandler("Missing access token"),
+    };
+  }
+
+  
 
   const spotifyFetcher = (path: string, options: {}, params?: Record<string, string>) => {
     if (!accessToken) throw new Error("Missings access token");
@@ -73,13 +95,27 @@ export const useSpotifyApi = () => {
 
 	const getArtistTopTracks = async (id: string) => spotifyFetcher(`artists/${id}/top-tracks`, {});
 
+  ////////////////////
   // SEARCH REQUEST //
+  ////////////////////
 
   const makeSearchRequest = async (
     query: string,
     type: string,
   ) => spotifyFetcher(`search?q=${query}&type=${type}`, {});
-	
+
+	/////////////////////
+  // PROFILE REQUEST //
+  /////////////////////
+
+  const getTopItems = async (type: string, timeFrame: string, limit: number = 10) => {
+    spotifyFetcher(`me/top/${type}`, {}, { limit: limit.toString(), timeFrame });
+  };
+
+  const getTopArtists = async (timeFrame: string, limit: number = 10) => getTopItems("artists", timeFrame, limit)
+
+  const getTopTracks = async (timeFrame: string, limit: number = 10) => getTopItems("tracks", timeFrame, limit)
+
   return {
     addSongsToPlaylist,
     createPlaylist,
@@ -90,5 +126,7 @@ export const useSpotifyApi = () => {
     getArtist,
     getArtistTopTracks,
     makeSearchRequest,
+    getTopArtists,
+    getTopTracks,
   };
 }

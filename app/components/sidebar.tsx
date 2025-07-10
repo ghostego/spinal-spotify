@@ -3,47 +3,47 @@
 import { useAuth } from "@/src/context/AuthContext";
 import { clearCache } from "@/src/hooks/init";
 import Link from "next/link";
-import Image from "next/image";
 
 export default function Sidebar () {
   const { profile } = useAuth();
 
   if (!profile) return <></>
 
-	return (
-    <div className="fixed flex flex-col gap-2 p-4 border-r-2 border-white min-h-screen w-[300px] pt-12 w-1/4 relative">
-      <div className="flex flex-col gap-y-4 w-full">
-        <Link
-          href="/"
-          className="flex gap-2 items-center p-2 border border-white"
+  return (
+    <div>
+      <input id="my-drawer" type="checkbox" className="drawer-toggle" />
+      <div className="drawer-content">
+        <label
+          htmlFor="my-drawer"
+          className="btn drawer-button fixed top-0 left-0 w-4 h-4 bg-red-500 text-white z-10 rounded-none text-xs"
         >
-          {profile && profile.images?.[1].url && (
-            <Image
-              alt={profile.displayName || ""}
-              src={profile.images?.[1].url}
-              height={40}
-              width={40}
-            />
-          )}
-          <div className="flex-col flex">
-            <h2 className="text-md">{profile.display_name}</h2>
-            <h3 className="text-xs">{profile.id}</h3>
-          </div>
-        </Link>
+          {"<3"}
+        </label>
+      </div>
+      <div className="drawer-side border-white border-r bg-black">
+        <label
+          htmlFor="my-drawer"
+          aria-label="close sidebar"
+          className="drawer-overlay"
+        ></label>
+        <div className="flex flex-col gap-y-4 w-full p-4 z-12 w-[30%] max-w-[300px]">
+          <Link
+            href="/"
+            className="flex gap-2 items-center p-2 text-lg text-center justify-center"
+          >
+            <span>SPINAL</span>
+          </Link>
 
-        <small className="cursor-pointer" onClick={() => clearCache()}>
-          logout
-        </small>
-
-        <Link href="/search" className="border border-white py-1 text-center">
-          <button>Show Search</button>
-        </Link>
-        <Link
-          href="/playlist"
-          className="border border-white py-1 px-2 text-center"
-        >
-          <button>Show Playlists</button>
-        </Link>
+          <Link href="/search" className="btn">
+            Search
+          </Link>
+          <Link href="/playlist" className="btn">
+            Playlists
+          </Link>
+          <button className="btn btn-error btn-outline" onClick={() => clearCache()}>
+            Logout
+          </button>
+        </div>
       </div>
     </div>
   );

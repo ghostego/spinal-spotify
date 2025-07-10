@@ -7,7 +7,7 @@ import Link from "next/link";
 
 export default function Playlist () {
   const { accessToken } = useAuth();
-	const { getPlaylists } = useSpotifyApi();
+	const { getPlaylists, unfollowPlaylist } = useSpotifyApi()!;
 	const [ playlists, setPlaylists ] = useState<Record<string, any>>([]);
 
 	useEffect(() => {
@@ -46,18 +46,30 @@ export default function Playlist () {
       <div className="flex flex-row justify-between items-center">
         <h3 className="text-lg mb-4">Playlists</h3>
       </div>
-      <div className="flex flex-row flex-wrap gap-2 justify-items-stretch mt-6">
+      <ul className="flex flex-col gap-2 justify-items-stretch mt-6">
         {playlists &&
           playlists.map((playlist: Record<string, any>) => {
             return (
-              <div key={playlist.id} className="px-2 py-1 border border-white">
-                <Link href={`/playlist/${playlist.id}/edit`}>
-                  {playlist.name}
-                </Link>
-              </div>
+              <li
+                key={playlist.id}
+                className="border border-white flex w-full justify-between items-center p-2"
+              >
+                <div>{playlist.name}</div>
+                <div className="flex flex-col gap-1">
+                  <Link href={`/playlist/${playlist.id}/edit`} className="btn">
+                    Edit Playlist
+                  </Link>
+                  <button
+                    className="btn btn-error btn-outline"
+                    onClick={() => unfollowPlaylist(playlist.id)}
+                  >
+                    Unfollow Playlist
+                  </button>
+                </div>
+              </li>
             );
           })}
-      </div>
+      </ul>
     </div>
   );
 }
