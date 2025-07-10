@@ -3,18 +3,20 @@
 import { useAuth } from "@/src/context/AuthContext";
 import { useState, useEffect } from "react";
 import { useSpotifyApi } from "@/src/hooks/useSpotifyApi";
+import { useSpotifyFeatures } from "@/src/features/spotify/useSpotifyFeatures";
 import Link from "next/link";
 
 export default function EditPlaylist() {
 	
-  const { accessToken, profile } = useAuth();
+  const { accessToken } = useAuth();
 	const [tracks, setTracks] = useState<any[]>([])
 	const [newPlaylist, setNewPlaylist] = useState<any[]>([]);
 	const [playlistName, setPlaylistName] = useState("")
   const [spotifyId, setSpotifyId] = useState("")
   const [playlistDescription, setPlaylistDescription] = useState("")
-
-  const { getPlaylist, getPlaylistTracks, unfollowPlaylist, createPlaylist } = useSpotifyApi();
+  
+  const { getPlaylist, getPlaylistTracks, unfollowPlaylist } = useSpotifyApi()!;
+  const { createPlaylistAndAddSongs } = useSpotifyFeatures();
 	
 	useEffect(() => {
     const id = window.location.pathname.split("/")[2];
@@ -87,8 +89,7 @@ export default function EditPlaylist() {
 	const makePlaylist = () => {
     if (newPlaylist.length === 0) return;
 		const playlistUris = newPlaylist.map((track) => track.uri);
-		if (!accessToken || playlistUris.length == 0) return;
-		createPlaylist(
+		createPlaylistAndAddSongs(
       playlistUris,
       playlistName,
       (playlistDescription || `Alex made this playlist ${Date().toString()}`),

@@ -44,15 +44,19 @@ export default function Home() {
       const expiration = new Date().getTime() +  3600000;
       setStorageWithExpiration("usedLastFmToken", lastFmToken, expiration);
     }
-
-    access(code || "", setAuthData).then(() => {
+    if (!code) return
+    access(code, setAuthData).then(() => {
       window.history.replaceState({}, document.title, window.location.pathname);
-      getTopArtists();
-      getTopSongs();
     });
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [accessToken]);
+
+  useEffect(() => {
+    if (!accessToken) return;
+    getTopArtists();
+    getTopSongs();
+  }, [accessToken, getTopArtists, getTopSongs]);
 
   if (!profile) {
     return (
@@ -129,7 +133,7 @@ export default function Home() {
                   return (
                     <li
                       key={song.id}
-                      className="flex flex-row gap-2 border border-white space-between mb-2 items-center pr-2 hover:bg-white hover:text-black cursor-default transition-all relative p-4"
+                      className="flex flex-row gap-2 border border-white space-between mb-2 items-center pr-2 hover:bg-white hover:text-black cursor-default transition-all relative p-4 h-[82px]"
                     >
                       <div className="absolute px-1 py-0.5 bg-green-900 text-white text-xs top-0 left-0">
                         {i + 1}

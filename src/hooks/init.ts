@@ -21,7 +21,7 @@ export const getProfile = async (code: string) => {
 
 export const getTopItems = async (type: string, timeFrame: string, accessToken: string) => {
   const url = new URL(`https://api.spotify.com/v1/me/top/${type}`);
-  url.searchParams.set("limit", "50")
+  url.searchParams.set("limit", "20")
   url.searchParams.set("time_range", timeFrame)
   const response = await fetch(url, {
     method: "GET",

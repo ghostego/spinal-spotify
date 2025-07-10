@@ -10,9 +10,9 @@ import { useSpotifyApi } from "@/src/hooks/useSpotifyApi";
 export default function Search () {
 	const { accessToken } = useAuth();
 	const [searchTerm, setSearchTerm] = useState("");
-	const [searchType, setSearchType] = useState<string[]>([])
+	const [searchType, setSearchType] = useState<string[]>(["artist"])
 	const [searchResults, setSearchResults] = useState<Record<string, any>>({});
-  const { makeSearchRequest } = useSpotifyApi();
+  const { makeSearchRequest } = useSpotifyApi()!;
 
 	const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setSearchTerm(e?.target?.value);
@@ -51,9 +51,7 @@ export default function Search () {
           className="text-black"
           onChange={(e) => onTypeChange(e)}
         >
-          <option value="album">Album</option>
           <option value="artist">Artist</option>
-          <option value="track">Track</option>
         </select>
         <button
           className="border border-white px-4 py-2"
@@ -70,27 +68,30 @@ export default function Search () {
 							const items = searchResults[types]?.items ?? [];
 							if (items.length === 0) return
 							return (
-                <div key={types}>
+                <div key={types} className="flex flex-col w-full">
                   <h2 className="text-lg font-bold mb-2">{types}</h2>
-                  <ul className="flex flex-col gap-2">
+                  <ul className="flex flex-col gap-2 w-full">
                     {items.map((item: Record<string, any>) => {
                       const image = getSmallestImage(item);
                       return (
-                      <li key={item.id || item.name} className="flex gap-2 items-center">
-                        <Link href={`/artist/${item.id || item.name}`}>
-                          {image &&
-                            <Image
-                              src={image.url}
-                              height={image.height}
-                              width={image.width}
-                              className="w-20 h-20"
-                              alt={item.name}
-                            />
-                          }
-                          <h3 className="text-lg">{item.name}</h3>
-                        </Link>
-                      </li>
-                    )})}
+                        <li
+                          key={item.id || item.name}
+                          className="flex flex-row gap-2 border border-white space-between mb-2 items-center pr-2  pl-0 hover:bg-white hover:text-black cursor-pointer transition-all relative p-4 h-[82px]"
+                        >
+                          <Link href={`/artist/${item.id || item.name}`} className="flex items-center h-full">
+                            {image && (
+                              <Image
+                                src={image.url}
+                                height={image.height}
+                                width={image.width}
+                                className="w-20 h-20"
+                                alt={item.name}
+                              />
+                            )}
+                            <h3 className="text-lg ml-2">{item.name}</h3>
+                          </Link>
+                        </li>
+                      );})}
                   </ul>
                 </div>
               );
