@@ -3,6 +3,7 @@
 import { useAuth } from "@/src/context/AuthContext";
 import { logout } from "@/src/hooks/init";
 import Link from "next/link";
+import HeartBrokenIcon from "@mui/icons-material/HeartBroken";
 
 export default function Sidebar () {
   const { profile } = useAuth();
@@ -15,9 +16,9 @@ export default function Sidebar () {
       <div className="drawer-content">
         <label
           htmlFor="my-drawer"
-          className="btn drawer-button fixed top-0 left-0 w-4 h-4 bg-red-500 text-white z-10 rounded-none text-xs"
+          className="btn drawer-button fixed top-0 left-0 w-4 h-8 bg-red-500 text-white z-10 rounded-none text-xs hover:bg-black hover:text-red-500 transition-all"
         >
-          {"<3"}
+          <HeartBrokenIcon />
         </label>
       </div>
       <div className="drawer-side border-white border-r bg-black">
