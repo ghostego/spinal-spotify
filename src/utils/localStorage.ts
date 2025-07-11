@@ -20,6 +20,10 @@ export const setStorage = (key: string, value: string) => {
 
 export const getStorage = (key: string) => {
 	const storedObject = localStorage.getItem(key);
-	if (!storedObject) return;
+	if (!storedObject) return {};
 	return JSON.parse(storedObject);
+}
+
+export const removeFromStorage = (key: string) => {
+	localStorage.removeItem(key)
 }

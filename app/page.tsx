@@ -1,9 +1,9 @@
 'use client'
 
 import { useEffect, useState } from "react"
-import { init, access } from "@/src/hooks/init"
+import { init, access, refreshAccessTokenFromStorage } from "@/src/hooks/init";
 import { useAuth } from "@/src/context/AuthContext"
-import { setStorageWithExpiration, getStorage } from "@/src/utils/localStorage";
+import { setStorageWithExpiration, getStorage, setStorage } from "@/src/utils/localStorage";
 import Image from "next/image";
 import Link from "next/link";
 import { useSpotifyApi } from "@/src/hooks/useSpotifyApi"
@@ -14,7 +14,7 @@ export default function Home() {
   const [topArtists, setTopArtists] = useState([])
   const [topTracks, setTopTracks] = useState([])
   const [playlists, setPlaylists] = useState([]);
-  const { setAuthData, profile, accessToken  } = useAuth()
+  const { setAuthData, profile, accessToken  } = useAuth();
   const { getTopTracks, getTopArtists, getPlaylists } = useSpotifyApi();
 
   const getArtistImage = (artist: Record<string, any>) => artist.images[0].url;
@@ -24,11 +24,11 @@ export default function Home() {
     const code = params.get("code");
     const lastFmToken = params.get("token");
 
-    if (code && !getStorage("used_code")) {
-      window.localStorage.setItem("used_code", code);
+    if (code && !getStorage("used_code").value) {
+      setStorage("used_code", code);
     }
 
-    if (lastFmToken && !localStorage.getItem("usedLastFmToken")) {
+    if (lastFmToken && !getStorage("usedLastFmToken").value) {
       const expiration = new Date().getTime() + 360000;
       setStorageWithExpiration("usedLastFmToken", lastFmToken, expiration);
     }
@@ -37,7 +37,7 @@ export default function Home() {
       window.history.replaceState({}, document.title, window.location.pathname);
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [accessToken]);
+  }, []);
 
   const getAndSetTopArtists = () =>
     getTopArtists(topArtistTimeFrame).then((x) => {
@@ -91,8 +91,8 @@ export default function Home() {
   }
 
   return (
-    <div className="p-4 w-full">
-      <div className="flex gap-4 border border-white p-4 justify-between items-center h-[20vh]">
+    <div className="p-4 w-full max-h-screen h-full overflow-y-hidden">
+      <div className="flex gap-4 border border-white p-4 justify-between items-center h-[20vh] overflow-hidden">
         <div className="flex gap-4">
           {profile?.images?.[0].url && (
             <Image

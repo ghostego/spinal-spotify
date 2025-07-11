@@ -1,5 +1,7 @@
 "use client";
 
+import { getStorage } from "../utils/localStorage";
+
 export const generateRandomString = (length: number) => {
   const possible =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -23,7 +25,8 @@ export const base64encode = (input: ArrayBuffer) => {
 export const getAccessToken = async (clientId: string, code: string) => {
   if (!code || !clientId) return;
   
-  const verifier = window?.localStorage?.getItem("code_verifier") || "";
+  // const verifier = window?.localStorage?.getItem("code_verifier") || "";
+  const verifier = getStorage("code_verifier").value;
   const params = new URLSearchParams();
   params.append("client_id", clientId);
   params.append("grant_type", "authorization_code");
