@@ -100,6 +100,7 @@ export default function Home() {
               src={profile?.images?.[0].url || ""}
               height={100}
               width={100}
+              priority
             />
           )}
           <div className="flex flex-col gap-1 justify-center">
