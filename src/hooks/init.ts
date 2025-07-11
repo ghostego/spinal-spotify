@@ -4,10 +4,10 @@ import {
   getAccessToken,
   generateRandomString,
 } from "@/src/login";
+import { setStorage, setStorageWithExpiration } from "../utils/localStorage";
 
-const clientId: string = process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID || "";
-const clientSecret: string = process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_SECRET || "";
-const redirectUri: string = process.env.NEXT_PUBLIC_SPOTIFY_REDIRECT_URI || "";
+const clientId: string = process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID!;
+const redirectUri: string = process.env.NEXT_PUBLIC_SPOTIFY_REDIRECT_URI!;
 
 export const getProfile = async (code: string) => {
   const response = await fetch("https://api.spotify.com/v1/me", {
@@ -19,41 +19,41 @@ export const getProfile = async (code: string) => {
   return await response.json();
 };
 
-export const getTopItems = async (type: string, timeFrame: string, accessToken: string) => {
-  const url = new URL(`https://api.spotify.com/v1/me/top/${type}`);
-  url.searchParams.set("limit", "20")
-  url.searchParams.set("time_range", timeFrame)
-  const response = await fetch(url, {
-    method: "GET",
-    headers: {
-      Authorization: "Bearer " + accessToken,
-    },
-  });
-  return await response.json();
-};
+export const getRefreshToken = async () => {
+  // refresh token that has been previously stored
+  const refreshToken = localStorage.getItem("refresh_token");
+  if (!refreshToken) return;
+  const url = "https://accounts.spotify.com/api/token";
 
-export const refreshAccessToken = async (refreshToken: string) => {
-  const params = new URLSearchParams();
-  params.append("grant_type", "refresh_token");
-  params.append("refresh_token", refreshToken);
-  params.append("client_id", clientId);
-  params.append("client_secret", clientSecret);
-  const response = await fetch("https://accounts.spotify.com/api/token", {
+  const payload = {
     method: "POST",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
     },
-    body: params.toString(),
-  });
-  const data = await response.json();
-  return data;
+    body: new URLSearchParams({
+      grant_type: "refresh_token",
+      refresh_token: refreshToken,
+      client_id: clientId,
+    }),
+  };
+  const body = await fetch(url, payload);
+  const response = await body.json();
+
+  const expiration = new Date().getTime() + 3600000;
+  localStorage.setItem("access_token", response.access_token);
+
+  if (response.refresh_token) {
+    setStorageWithExpiration("expiryAccessToken", response.access_token, expiration);
+    localStorage.setItem("refresh_token", response.refresh_token);
+    setStorage("refresh_token", response.refreshToken)
+  }
+  return response.json();
 };
 
 export const access = async (code: string, setAuthData: (data: any) => void) => {
-  const refresh_token = window.localStorage.getItem("refresh_token") || "";
+  const refresh_token = await getRefreshToken();
   if (!code && refresh_token) {
-    const tokenData = await refreshAccessToken(refresh_token);
-    if (!tokenData.access_token) {
+    if (!refresh_token.access_token) {
       return;
     }
     getProfile(tokenData.access_token).then((profile) => {
@@ -93,6 +93,7 @@ export const access = async (code: string, setAuthData: (data: any) => void) => 
     });
     return;
 };
+
 const authorizationRequest = async (codeChallenge: string) => {
   const scope =
     "user-read-private user-read-email user-top-read playlist-modify-public playlist-modify-private playlist-read-private";
@@ -109,19 +110,21 @@ const authorizationRequest = async (codeChallenge: string) => {
   window.location.href = authUrl.toString();
 };
 
-
 export const clearCache = () => {
   window.location.search = "";
   window.localStorage.removeItem("code_verifier");
-  window.localStorage.removeItem("profile");
   window.localStorage.removeItem("loglevel");
-  window.localStorage.removeItem("refresh_token");
   window.localStorage.removeItem("used_code");
   window.location.pathname = "/"
 };
 
+export const logout = () => {
+  window.localStorage.removeItem("profile");
+  window.localStorage.removeItem("refresh_token");
+  clearCache();
+}
+
 export const init = async (setAuthData: any) => {
-  clearCache()
   const params = new URLSearchParams(window.location.search);
   const code = params.get("code");
   // This is going to fire when we have a code in the url, which means we are hitting this only
@@ -144,13 +147,13 @@ export const init = async (setAuthData: any) => {
   // if we have a refresh token, that means we have recently received an access token from spotify
   // and now can use the refresh token to regenerate the access token as needed
   if (refreshToken) {
-    const data = await refreshAccessToken(refreshToken);
+    const data = await getRefreshToken();
     if (data.access_token) {
       const profile = await getProfile(data.access_token);
       window.localStorage.setItem("profile", JSON.stringify(profile));
       window.localStorage.setItem("accessToken", data.access_token);
+      return;
     }
-    return;
   } 
 
   const codeVerifier = generateRandomString(64);

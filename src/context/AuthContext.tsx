@@ -1,6 +1,7 @@
 'use client'
 
 import React, { createContext, useContext, useEffect, useState } from "react";
+import { setStorageWithExpiration, getStorage } from "@/src/utils/localStorage";
 
 // set up the interface for our auth context
 interface AuthContextType {
@@ -28,14 +29,19 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({ children }
 
 		if (token) setAccessToken(token)
 		if (refresh) setRefreshToken(refresh)
-		if (profile) setProfile(profile)
+		if (profile) setProfile(JSON.parse(profile))
 	}, [])
 
 	const setAuthData = ({accessToken, refreshToken, profile}: any) => {
 		setAccessToken(accessToken)
 		setRefreshToken(refreshToken)
 		setProfile(profile)
-		localStorage.setItem("accessToken", accessToken)
+		const expiryAccessToken = JSON.parse(
+      localStorage.getItem("setAccessToken") || "null"
+    );
+		localStorage.setItem("accessToken", accessToken);
+		const expiration = new Date().getTime() + 3600000;
+		if (!expiryAccessToken) setStorageWithExpiration("expiryAccessToken", accessToken, expiration);
 		localStorage.setItem("refresh_token", refreshToken)
 		localStorage.setItem("profile", JSON.stringify(profile))
 	}

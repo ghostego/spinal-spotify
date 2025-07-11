@@ -27,8 +27,6 @@ export const useSpotifyApi = () => {
     };
   }
 
-  
-
   const spotifyFetcher = (path: string, options: {}, params?: Record<string, string>) => {
     if (!accessToken) throw new Error("Missings access token");
     const url = buildSpotifyUrl(path, options);
@@ -109,7 +107,7 @@ export const useSpotifyApi = () => {
   /////////////////////
 
   const getTopItems = async (type: string, timeFrame: string, limit: number = 10) => {
-    spotifyFetcher(`me/top/${type}`, {}, { limit: limit.toString(), timeFrame });
+    return spotifyFetcher(`me/top/${type}`, { limit: limit.toString(), time_range: timeFrame });
   };
 
   const getTopArtists = async (timeFrame: string, limit: number = 10) => getTopItems("artists", timeFrame, limit)

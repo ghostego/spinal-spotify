@@ -9,6 +9,7 @@ import { getRandomResults } from "@/src/utils/getRandom";
 import { handleize } from "@/src/utils/handleize";
 import { batchRequests } from "@/src/utils/batchRequests";
 import Image from "next/image";
+import Link from "next/link"
 
 export default function ArtistInfo () {
 	const { accessToken } = useAuth();
@@ -120,22 +121,33 @@ export default function ArtistInfo () {
           <div className="flex flex-row w-full">
             <div className="flex flex-col w-1/2 p-2">
               <h3 className="text-lg mb-2">Top Songs</h3>
-              {topTracks &&
-                topTracks.length > 0 &&
-                topTracks.map((track: Record<string, any>) => {
-                  return (
-                    <div key={track.id} className="flex text-xs mb-1">
-                      {track.name} - {track.album.name}
-                    </div>
-                  );
-                })}
+              <ul>
+                {topTracks &&
+                  topTracks?.map((song: Record<string, any>, i) => {
+                    const artists = song.artists
+                      .map((artist: Record<string, any>) => artist.name)
+                      .join(", ");
+                    return (
+                      <Link
+                        href={song.external_urls.spotify}
+                        key={song.id}
+                        className="flex flex-row gap-2 border border-white space-between mb-2 items-center pr-2 hover:bg-white hover:text-black transition-all relative p-4 h-[82px]"
+                      >
+                        <div className="absolute px-1 py-0.5 bg-green-900 text-white text-xs top-0 left-0">
+                          {i + 1}
+                        </div>
+                        {song.name} - {artists}
+                      </Link>
+                    );
+                  })}
+              </ul>
             </div>
             {similarArtists?.length > 0 && (
               <div className="flex w-1/2 flex-col">
+                <h3 className="text-lg mb-2">Related Artists: </h3>
                 <div className="flex flex-col p-4 border border-white gap-2 w-1/2 w-full mb-2">
-                  <h3 className="text-lg">Related Artists: </h3>
-                  <div className="overflow-y-scroll h-[200px] flex flex-wrap gap-1">
-                    {similarArtists.map((artist: Record<string,any>, i) => {
+                  <div className="overflow-y-scroll  flex flex-wrap gap-1">
+                    {similarArtists.map((artist: Record<string, any>, i) => {
                       return (
                         <div
                           key={"similar-artist-" + i}
