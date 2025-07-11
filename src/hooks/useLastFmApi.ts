@@ -1,16 +1,24 @@
+import { buildLastFmUrl } from "../utils/url";
 
-
-const client_secret = process.env.NEXT_PUBLIC_LASTFM_CLIENT_SECRET || "";
 const api_key = process.env.NEXT_PUBLIC_LASTFM_API_KEY || "";
 
+export const getArtistEndpointOptions = (handle: string, method: string) => {
+  return {
+    method: `artist.${method}`,
+    artist: handle,
+    api_key: api_key,
+    format: "json",
+  };
+}
+
 export const getSimilarArtists = async (handle: string) => {
-	const API_URL = "http://ws.audioscrobbler.com/2.0/";
-	const requestUrl = new URL(API_URL);
-	requestUrl.searchParams.set("method", "artist.getsimilar")
-	requestUrl.searchParams.set("artist", handle);
-	requestUrl.searchParams.set("api_key", api_key);
-	requestUrl.searchParams.set("format", "json");
-	return await fetch(requestUrl.toString());
+  const url = buildLastFmUrl("",getArtistEndpointOptions(handle, "getsimilar"));
+	return await fetch(url.toString());
+}
+
+export const getArtistData = async (handle: string) => {
+  const url = buildLastFmUrl("", getArtistEndpointOptions(handle, "getinfo"));
+  return await fetch(url.toString());
 }
 
 export const request = () => {

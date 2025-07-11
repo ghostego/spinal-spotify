@@ -92,14 +92,16 @@ export default function Home() {
 
   return (
     <div className="p-4 w-full">
-      <div className="flex gap-4 border border-white p-4 justify-between items-center">
+      <div className="flex gap-4 border border-white p-4 justify-between items-center h-[20vh]">
         <div className="flex gap-4">
-          {profile?.images?.[0].url && <Image
-            alt={profile?.display_name || ""}
-            src={profile?.images?.[0].url || ""}
-            height={100}
-            width={100}
-          />}
+          {profile?.images?.[0].url && (
+            <Image
+              alt={profile?.display_name || ""}
+              src={profile?.images?.[0].url || ""}
+              height={100}
+              width={100}
+            />
+          )}
           <div className="flex flex-col gap-1 justify-center">
             <h4 className="text-sm">{profile?.id}</h4>
             <h2 className="text-lg mb-0.5">{profile?.display_name}</h2>
@@ -115,9 +117,9 @@ export default function Home() {
           </Link>
         </div>
       </div>
-      <div className="flex gap-4">
+      <div className="flex gap-4  ">
         {topArtists?.length > 0 && (
-          <div className="flex flex-col gap-2 mt-4 w-1/3">
+          <div className="flex flex-col gap-2 mt-4 w-1/3 h-full overflow-y-scroll max-h-[70vh]">
             <div className="flex justify-between">
               <h3 className="text-lg">Top Artists</h3>
               <select
@@ -158,7 +160,7 @@ export default function Home() {
           </div>
         )}
         {topTracks?.length > 0 && (
-          <div className="flex flex-col gap-2 mt-4 w-1/3">
+          <div className="flex flex-col gap-2 mt-4 w-1/3 h-full overflow-y-scroll max-h-[70vh]">
             <div className="flex justify-between">
               <h3 className="text-lg">Top Songs</h3>
               <select
@@ -195,7 +197,7 @@ export default function Home() {
           </div>
         )}
         {playlists?.length > 0 && (
-          <div className="flex flex-col gap-2 mt-4 w-1/3">
+          <div className="flex flex-col gap-2 mt-4 w-1/3 h-full overflow-y-scroll max-h-[70vh]">
             <h3 className="text-lg">Playlists</h3>
             <ul>
               {playlists &&
