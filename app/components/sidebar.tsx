@@ -1,7 +1,7 @@
 'use client'
 
 import { useAuth } from "@/src/context/AuthContext";
-import { clearCache } from "@/src/hooks/init";
+import { logout } from "@/src/hooks/init";
 import Link from "next/link";
 
 export default function Sidebar () {
@@ -40,7 +40,10 @@ export default function Sidebar () {
           <Link href="/playlist" className="btn">
             Playlists
           </Link>
-          <button className="btn btn-error btn-outline" onClick={() => clearCache()}>
+          <button
+            className="btn btn-error btn-outline"
+            onClick={() => logout()}
+          >
             Logout
           </button>
         </div>
