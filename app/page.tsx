@@ -91,7 +91,7 @@ export default function Home() {
   }
 
   return (
-    <div className="p-4 w-full max-h-screen h-full overflow-y-hidden">
+    <div className="p-4 pb-0 w-full max-h-screen h-full overflow-y-hidden flex flex-col space-between">
       <div className="flex gap-4 border border-white p-4 justify-between items-center h-[20vh] overflow-hidden">
         <div className="flex gap-4">
           {profile?.images?.[0].url && (
@@ -118,9 +118,9 @@ export default function Home() {
           </Link>
         </div>
       </div>
-      <div className="flex gap-4  ">
+      <div className="flex gap-4 items-end">
         {topArtists?.length > 0 && (
-          <div className="flex flex-col gap-2 mt-4 w-1/3 h-full overflow-y-scroll max-h-[70vh]">
+          <div className="flex flex-col gap-2 mt-4 w-1/3 h-full overflow-y-scroll max-h-[70vh] pb-4">
             <div className="flex justify-between">
               <h3 className="text-lg">Top Artists</h3>
               <select
@@ -161,7 +161,7 @@ export default function Home() {
           </div>
         )}
         {topTracks?.length > 0 && (
-          <div className="flex flex-col gap-2 mt-4 w-1/3 h-full overflow-y-scroll max-h-[70vh]">
+          <div className="flex flex-col gap-2 mt-4 w-1/3 h-full overflow-y-scroll max-h-[70vh] pb-4">
             <div className="flex justify-between">
               <h3 className="text-lg">Top Songs</h3>
               <select
@@ -198,7 +198,7 @@ export default function Home() {
           </div>
         )}
         {playlists?.length > 0 && (
-          <div className="flex flex-col gap-2 mt-4 w-1/3 h-full overflow-y-scroll max-h-[70vh]">
+          <div className="flex flex-col gap-2 mt-4 w-1/3 h-full overflow-y-scroll max-h-[70vh] pb-4">
             <h3 className="text-lg">Playlists</h3>
             <ul>
               {playlists &&
