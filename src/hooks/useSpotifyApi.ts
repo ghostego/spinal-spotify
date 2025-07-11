@@ -22,12 +22,13 @@ export const useSpotifyApi = () => {
       getArtist: createMissingTokenHandler("Missing access token"),
       getArtistTopTracks: createMissingTokenHandler("Missing access token"),
       makeSearchRequest: createMissingTokenHandler("Missing access token"),
+      getProfile: createMissingTokenHandler("Missing access token"),
       getTopArtists: createMissingTokenHandler("Missing access token"),
       getTopTracks: createMissingTokenHandler("Missing access token"),
     };
   }
 
-  const spotifyFetcher = (path: string, options: {}, params?: Record<string, string>) => {
+  const spotifyFetcher = (path: string, options: {}) => {
     if (!accessToken) throw new Error("Missings access token");
     const url = buildSpotifyUrl(path, options);
     return fetcher(url, options, accessToken)
@@ -106,6 +107,10 @@ export const useSpotifyApi = () => {
   // PROFILE REQUEST //
   /////////////////////
 
+  const getProfile = async () => {
+    return spotifyFetcher("/me", {});
+  };
+
   const getTopItems = async (type: string, timeFrame: string, limit: number = 10) => {
     return spotifyFetcher(`me/top/${type}`, { limit: limit.toString(), time_range: timeFrame });
   };
@@ -124,6 +129,7 @@ export const useSpotifyApi = () => {
     getArtist,
     getArtistTopTracks,
     makeSearchRequest,
+    getProfile,
     getTopArtists,
     getTopTracks,
   };
