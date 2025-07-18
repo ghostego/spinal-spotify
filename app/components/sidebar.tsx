@@ -41,6 +41,9 @@ export default function Sidebar () {
           <Link href="/playlist" className="btn">
             Playlists
           </Link>
+          <Link href="/playlist/new" className="btn">
+            New Playlist
+          </Link>
           <button
             className="btn btn-error btn-outline"
             onClick={() => logout()}
