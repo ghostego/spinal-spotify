@@ -11,26 +11,21 @@ export const useSpotifyApi = () => {
     };
   };
 
+  const methods = [
+    "addSongsToPlaylist", "createPlaylist", "getPlaylists", "getPlaylist", "getPlaylistTracks", "unFollowPlaylist",
+    "getArtist", "getArtistsTopTracks", "makeSearchRequest", "getProfile", "getTopArtists", "getTopTracks", "getUserProfile",
+    "getUserPlaylists", "getArtistAlbums", "getAlbum"
+  ] 
+
   if (!accessToken) {
-    return {
-      addSongsToPlaylist: createMissingTokenHandler("Missing access token"),
-      createPlaylist: createMissingTokenHandler("Missing access token"),
-      getPlaylists: createMissingTokenHandler("Missing access token"),
-      getPlaylist: createMissingTokenHandler("Missing access token"),
-      getPlaylistTracks: createMissingTokenHandler("Missing access token"),
-      unfollowPlaylist: createMissingTokenHandler("Missing access token"),
-      getArtist: createMissingTokenHandler("Missing access token"),
-      getArtistTopTracks: createMissingTokenHandler("Missing access token"),
-      makeSearchRequest: createMissingTokenHandler("Missing access token"),
-      getProfile: createMissingTokenHandler("Missing access token"),
-      getTopArtists: createMissingTokenHandler("Missing access token"),
-      getTopTracks: createMissingTokenHandler("Missing access token"),
-      getUserProfile: createMissingTokenHandler("Missing access token"),
-      getUserPlaylists: createMissingTokenHandler("Missing access token")
-    };
+    const handlers = methods.reduce((acc, method) => {
+      acc[method] = createMissingTokenHandler(method);
+      return acc;
+    }, {} as Record<string, () => Promise<never>>);
+    return handlers;
   }
 
-  const spotifyFetcher = (path: string, options: {}) => {
+  const spotifyFetcher = async(path: string, options: {} = {}) => {
     if (!accessToken) throw new Error("Missings access token");
     const url = buildSpotifyUrl(path, options);
     return fetcher(url, options, accessToken)
@@ -45,7 +40,7 @@ export const useSpotifyApi = () => {
       limit: "10",
     });
 
-  const getPlaylist = async (id: string) => spotifyFetcher(`playlists/${id}`, {});
+  const getPlaylist = async (id: string) => spotifyFetcher(`playlists/${id}`);
 
   const getPlaylistTracks = async (id: string, offset: number = 0) => spotifyFetcher(`playlists/${id}/tracks`, {
       offset: offset.toString()
@@ -92,9 +87,13 @@ export const useSpotifyApi = () => {
   // ARTIST DATA //
   /////////////////
 
-  const getArtist = async (id: string) => spotifyFetcher(`artists/${id}`, {})
+  const getArtist = async (id: string) => spotifyFetcher(`artists/${id}`)
 
-	const getArtistTopTracks = async (id: string) => spotifyFetcher(`artists/${id}/top-tracks`, {});
+	const getArtistTopTracks = async (id: string) => spotifyFetcher(`artists/${id}/top-tracks`);
+
+  const getArtistAlbums = async (id: string) => spotifyFetcher(`artists/${id}/albums`);
+
+  const getAlbum = async (id: string) => spotifyFetcher(`albums/${id}`)
 
   ////////////////////
   // SEARCH REQUEST //
@@ -103,23 +102,17 @@ export const useSpotifyApi = () => {
   const makeSearchRequest = async (
     query: string,
     type: string,
-  ) => spotifyFetcher(`search?q=${query}&type=${type}`, {});
+  ) => spotifyFetcher(`search?q=${query}&type=${type}`);
 
 	/////////////////////
   // PROFILE REQUEST //
   /////////////////////
 
-  const getProfile = async () => {
-    return spotifyFetcher("me", {});
-  };
+  const getProfile = async () => spotifyFetcher("me");
 
-  const getUserProfile = async (id: string) => {
-    return spotifyFetcher(`users/${id}`, {})
-  }
+  const getUserProfile = async (id: string) => spotifyFetcher(`users/${id}`);
 
-  const getUserPlaylists = async (id: string) => {
-    return spotifyFetcher(`users/${id}/playlists`, {});
-  }
+  const getUserPlaylists = async (id: string) => spotifyFetcher(`users/${id}/playlists`);
 
   const getTopItems = async (type: string, timeFrame: string, limit: number = 10) => {
     return spotifyFetcher(`me/top/${type}`, { limit: limit.toString(), time_range: timeFrame });
@@ -144,5 +137,7 @@ export const useSpotifyApi = () => {
     getTopTracks,
     getUserProfile,
     getUserPlaylists,
+    getArtistAlbums,
+    getAlbum,
   };
 }

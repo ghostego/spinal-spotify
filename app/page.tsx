@@ -56,7 +56,7 @@ export default function Home() {
     });
 
   useEffect(() => {
-    if (!accessToken) return;
+    if (!accessToken || !profile) return;
     getAndSetTopArtists()
     getAndSetTopTracks()
     getAndSetPlaylists()
