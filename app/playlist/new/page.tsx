@@ -19,6 +19,7 @@ export default function NewPlaylist() {
 	const [isResultInfoOpen, setIsResultInfoOpen] = useState(false)
 	const [playlistName, setPlaylistName] = useState("");
 	const [playlistDescription, setPlaylistDescription] = useState("")
+  const [isCreating, setIsCreating] = useState(false);
   const { makeSearchRequest } = useSpotifyApi()!;
   const { accessToken } = useAuth();
 	const { createPlaylistAndAddSongs } = useSpotifyFeatures()!;
@@ -33,8 +34,8 @@ export default function NewPlaylist() {
     setSearchType(selectedTypes);
   };
 
-  const onSearchSubmit = (e: React.ChangeEvent) => {
-		e.preventDefault();
+  const onSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     if (!searchTerm || !searchType || !accessToken) return;
     makeSearchRequest(searchTerm, searchType.join(",")).then((results) => {
       setSearchResults(results);
@@ -73,7 +74,12 @@ export default function NewPlaylist() {
 
 	const createPlaylist = () => {
 		if (playlistSongs.length == 0) return;
-		createPlaylistAndAddSongs(playlistSongs.map((song: Record<string, any>) => song.uri), playlistName, playlistDescription).then((data) => {
+    setIsCreating(true)
+		createPlaylistAndAddSongs(playlistSongs.map((song: Record<string, any>) => song.uri), playlistName, playlistDescription).then(() => {
+      setPlaylistSongs([]);
+      setPlaylistName("");
+      setPlaylistDescription("");
+      setIsCreating(false);
 			window.location.pathname = "/playlist";
 		}).catch((e) => {
 			console.log("there was an error", e)
@@ -95,9 +101,8 @@ export default function NewPlaylist() {
             value={playlistName}
             onChange={playlistNameUpdate}
           />
-          <input
+          <textarea
             placeholder="description"
-            type="textarea"
             className="p-2"
             value={playlistDescription}
             onChange={playlistDescriptionUpdate}
@@ -112,7 +117,7 @@ export default function NewPlaylist() {
             Add Songs
           </button>
           <button className="btn btn-primary" onClick={() => createPlaylist()}>
-            Create Playlist
+            {isCreating ? "Creating..." : "Create Playlist"}
           </button>
         </div>
       </div>
