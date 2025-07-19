@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useSpotifyApi } from "@/src/hooks/useSpotifyApi";
+import { useSpotifyFeatures } from "@/src/features/spotify/useSpotifyFeatures";
 import { useAuth } from "@/src/context/AuthContext";
 import SearchResult from "@/components/search/SearchResult";
 import SearchResultInfo from "@/components/search/SearchResultInfo"
@@ -16,8 +17,11 @@ export default function NewPlaylist() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 	const [selectedResult, setSelectedResult] = useState({});
 	const [isResultInfoOpen, setIsResultInfoOpen] = useState(false)
+	const [playlistName, setPlaylistName] = useState("");
+	const [playlistDescription, setPlaylistDescription] = useState("")
   const { makeSearchRequest } = useSpotifyApi()!;
   const { accessToken } = useAuth();
+	const { createPlaylistAndAddSongs } = useSpotifyFeatures()!;
 
   const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setSearchTerm(e.target.value);
@@ -62,12 +66,42 @@ export default function NewPlaylist() {
     );
 	}
 
+	const removeFromPlaylist = (track: Record<string, any>) => {
+		const filteredSongs = playlistSongs.filter((playlistSong: Record<string, any>) => playlistSong.id !== track.id);
+		setPlaylistSongs(filteredSongs);
+	}
+
+	const createPlaylist = () => {
+		if (playlistSongs.length == 0) return;
+		createPlaylistAndAddSongs(playlistSongs.map((song: Record<string, any>) => song.uri), playlistName, playlistDescription).then((data) => {
+			window.location.pathname = "/playlist";
+		}).catch((e) => {
+			console.log("there was an error", e)
+		})
+	}
+
+	const playlistNameUpdate = (e: Record<string, any>) => setPlaylistName(e.target.value)
+
+	const playlistDescriptionUpdate = (e: Record<string, any>) => setPlaylistDescription(e.target.value);
+
   return (
     <div className="relative w-full p-6">
       <div className="flex items-center justify-between">
         <div className="flex flex-col gap-y-2">
-          <input placeholder="Playlist Name" type="text" className="p-2" />
-          <input placeholder="description" type="textarea" className="p-2" />
+          <input
+            placeholder="Playlist Name"
+            type="text"
+            className="p-2"
+            value={playlistName}
+            onChange={playlistNameUpdate}
+          />
+          <input
+            placeholder="description"
+            type="textarea"
+            className="p-2"
+            value={playlistDescription}
+            onChange={playlistDescriptionUpdate}
+          />
         </div>
         {/* Open sidebar button */}
         <div className="flex flex-col gap-y-1">
@@ -77,7 +111,9 @@ export default function NewPlaylist() {
           >
             Add Songs
           </button>
-          <button className="btn btn-primary">Create Playlist</button>
+          <button className="btn btn-primary" onClick={() => createPlaylist()}>
+            Create Playlist
+          </button>
         </div>
       </div>
       <div className="w-full flex flex-col mt-2 gap-y-1">
@@ -90,9 +126,16 @@ export default function NewPlaylist() {
               >
                 <div className="flex gap-x-2 items-center">
                   {song.name} -{" "}
-                  {song.artists.map((artist:Record<string, any>) => artist.name).join(", ")}
+                  {song.artists
+                    .map((artist: Record<string, any>) => artist.name)
+                    .join(", ")}
                 </div>
-                <button className="btn btn-error btn-outline">Remove</button>
+                <button
+                  className="btn btn-error btn-outline"
+                  onClick={() => removeFromPlaylist(song)}
+                >
+                  Remove
+                </button>
               </div>
             );
           })}
