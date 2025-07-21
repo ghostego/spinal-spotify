@@ -39,7 +39,7 @@ export default function Search () {
   }
 
 	return (
-    <div className="p-4 flex flex-col gap-y-6">
+    <div className="p-4 flex flex-col gap-y-6 w-full">
       <div className="flex flex-row gap-4 border-b border-white pb-6">
         <input
           className="text-black p-2"

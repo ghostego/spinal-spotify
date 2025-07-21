@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from "react"
-import { init, access, refreshAccessTokenFromStorage } from "@/src/hooks/init";
+import { init, access } from "@/src/hooks/init";
 import { useAuth } from "@/src/context/AuthContext"
 import { setStorageWithExpiration, getStorage, setStorage } from "@/src/utils/localStorage";
 import Image from "next/image";
@@ -92,7 +92,7 @@ export default function Home() {
 
   return (
     <div className="p-4 pb-0 w-full max-h-screen h-full overflow-y-hidden flex flex-col space-between">
-      <div className="flex gap-4 border border-white p-4 justify-between items-center h-[20vh] overflow-hidden">
+      <div className="flex gap-4 border border-white pr-4 justify-between items-center">
         <div className="flex gap-4">
           {profile?.images?.[0].url && (
             <Image
@@ -127,6 +127,7 @@ export default function Home() {
                 onChange={(e) => {
                   setTopArtistTimeFrame(e.target.value);
                 }}
+                value={topArtistTimeFrame}
               >
                 <option value="short_term">short</option>
                 <option value="medium_term">medium</option>
