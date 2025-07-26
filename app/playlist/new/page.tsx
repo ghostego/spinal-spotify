@@ -93,7 +93,7 @@ export default function NewPlaylist() {
   return (
     <div className="relative w-full p-6">
       <div className="flex items-center justify-between">
-        <div className="flex flex-col gap-y-2">
+        <div className="flex flex-col gap-y-2 w-full pr-4">
           <input
             placeholder="Playlist Name"
             type="text"
@@ -108,7 +108,6 @@ export default function NewPlaylist() {
             onChange={playlistDescriptionUpdate}
           />
         </div>
-        {/* Open sidebar button */}
         <div className="flex flex-col gap-y-1">
           <button
             onClick={() => setIsSidebarOpen(true)}
@@ -121,7 +120,8 @@ export default function NewPlaylist() {
           </button>
         </div>
       </div>
-      <div className="w-full flex flex-col mt-2 gap-y-1">
+      <div className="w-full flex flex-col mt-2 gap-y-1 pt-10">
+        {playlistSongs.length == 0 && <div className="text-center">Add songs to get started</div>}
         {playlistSongs.length > 0 &&
           playlistSongs.map((song: Record<string, any>) => {
             return (
