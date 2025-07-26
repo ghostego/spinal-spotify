@@ -7,6 +7,22 @@ import { setStorageWithExpiration, getStorage, setStorage } from "@/src/utils/lo
 import Image from "next/image";
 import Link from "next/link";
 import { useSpotifyApi } from "@/src/hooks/useSpotifyApi"
+import ListItem from "./components/List/ListItem";
+
+const TIMEFRAMES = [
+  {
+    value: "short_term",
+    label: "Short Term"
+  },
+  {
+    value: "medium_term",
+    label: "Medium Term",
+  },
+  {
+    value: "long_term",
+    label: "Long Term"
+  }
+]
 
 export default function Home() {
   const [topArtistTimeFrame, setTopArtistTimeFrame] = useState("medium_term");
@@ -16,8 +32,6 @@ export default function Home() {
   const [playlists, setPlaylists] = useState([]);
   const { setAuthData, profile, accessToken  } = useAuth();
   const { getTopTracks, getTopArtists, getPlaylists } = useSpotifyApi();
-
-  const getArtistImage = (artist: Record<string, any>) => artist.images[0].url;
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -129,33 +143,19 @@ export default function Home() {
                 }}
                 value={topArtistTimeFrame}
               >
-                <option value="short_term">short</option>
-                <option value="medium_term">medium</option>
-                <option value="long_term">long</option>
+                {TIMEFRAMES.map(timeframe => <option value={timeframe.value} key={timeframe.value}>{timeframe.label}</option>)}
               </select>
             </div>
             <ul>
               {topArtists &&
-                topArtists.map((artist: Record<string, any>, i) => {
+                topArtists.map((artist: Record<string, any>) => {
                   return (
-                    <li key={artist.id}>
-                      <Link
-                        href={`/artist/${artist.id}`}
-                        className="flex flex-row gap-2 border border-white space-between mb-2 items-center pr-2 hover:bg-white hover:text-black cursor-pointer transition-all relative"
-                      >
-                        <div className="absolute px-1 py-0.5 bg-green-900 text-white text-xs top-0 left-0">
-                          {i + 1}
-                        </div>
-                        <Image
-                          src={getArtistImage(artist)}
-                          className="h-20 w-20"
-                          alt={artist.name}
-                          width={80}
-                          height={80}
-                        />
-                        {artist.name}
-                      </Link>
-                    </li>
+                    <ListItem
+                      key={artist.id}
+                      href={`/artist/${artist.id}`}
+                      name={artist.name}
+                      image={artist.images[0]}
+                    ></ListItem>
                   );
                 })}
             </ul>
@@ -166,14 +166,10 @@ export default function Home() {
             <div className="flex justify-between">
               <h3 className="text-lg">Top Songs</h3>
               <select
-                onChange={(e) => {
-                  setTopTracksTimeFrame(e.target.value);
-                }}
+                onChange={(e) => setTopTracksTimeFrame(e.target.value)}
                 value={topTracksTimeFrame}
               >
-                <option value="short_term">short</option>
-                <option value="medium_term">medium</option>
-                <option value="long_term">long</option>
+                {TIMEFRAMES.map(timeframe => <option value={timeframe.value} key={timeframe.value}>{timeframe.label}</option>)}
               </select>
             </div>
             <ul>
@@ -183,16 +179,11 @@ export default function Home() {
                     .map((artist: Record<string, any>) => artist.name)
                     .join(",");
                   return (
-                    <Link
+                    <ListItem
                       href={song.external_urls.spotify}
+                      name={`${song.name} - ${artists}`}
                       key={song.id}
-                      className="flex flex-row gap-2 border border-white space-between mb-2 items-center pr-2 hover:bg-white hover:text-black transition-all relative p-4 h-[82px]"
-                    >
-                      <div className="absolute px-1 py-0.5 bg-green-900 text-white text-xs top-0 left-0">
-                        {i + 1}
-                      </div>
-                      {song.name} - {artists}
-                    </Link>
+                    />
                   );
                 })}
             </ul>
@@ -205,16 +196,11 @@ export default function Home() {
               {playlists &&
                 playlists?.map((playlist: Record<string, any>, i) => {
                   return (
-                    <Link
+                    <ListItem
                       key={playlist.id}
-                      className="flex flex-row gap-2 border border-white space-between mb-2 items-center pr-2 hover:bg-white hover:text-black transition-all relative p-4 h-[82px]"
                       href={`/playlist/${playlist.id}/edit`}
-                    >
-                      <div className="absolute px-1 py-0.5 bg-green-900 text-white text-xs top-0 left-0">
-                        {i + 1}
-                      </div>
-                      {playlist.name}
-                    </Link>
+                      name={playlist.name}
+                    />
                   );
                 })}
             </ul>

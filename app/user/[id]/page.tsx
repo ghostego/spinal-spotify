@@ -7,6 +7,7 @@ import { batchRequests } from "@/src/utils/batchRequests";
 import { getRandomResults } from "@/src/utils/getRandom";
 import Image from "next/image"
 import Link from "next/link"
+import ListItem from "@/app/components/List/ListItem";
 
 export default function UserProfile() {
 
@@ -117,19 +118,13 @@ export default function UserProfile() {
             </div>
             <ul>
               {topArtists &&
-                topArtists.map((artist: Record<string, any>, i) => {
+                topArtists.map((artist: Record<string, any>) => {
                   return (
-                    <li key={artist.id}>
-                      <Link
+                      <ListItem
+                        key={artist.id}
                         href={`/artist/${artist.id}`}
-                        className="flex flex-row gap-2 border border-white space-between mb-2 items-center pr-2 hover:bg-white hover:text-black cursor-pointer transition-all relative h-20 p-4"
-                      >
-                        <div className="absolute px-1 py-0.5 bg-green-900 text-white text-xs top-0 left-0">
-                          {i + 1}
-                        </div>
-                        {artist.name} appears {artist.counter} times
-                      </Link>
-                    </li>
+                        name={`${artist.name} appears ${artist.counter} times`}
+                      />
                   );
                 })}
             </ul>
@@ -150,16 +145,11 @@ export default function UserProfile() {
                     .map((artist: Record<string, any>) => artist.name)
                     .join(",");
                   return (
-                    <Link
+                    <ListItem
                       href={song.external_urls.spotify}
                       key={song.id}
-                      className="flex flex-row gap-2 border border-white space-between mb-2 items-center pr-2 hover:bg-white hover:text-black transition-all relative p-4 h-[82px]"
-                    >
-                      <div className="absolute px-1 py-0.5 bg-green-900 text-white text-xs top-0 left-0">
-                        {i + 1}
-                      </div>
-                      {song.name} - {artists} - {song.counter} times
-                    </Link>
+                      name={`${song.name} - ${artists} - ${song.counter} times`}
+                    />
                   );
                 })}
             </ul>
@@ -172,16 +162,11 @@ export default function UserProfile() {
               {playlists &&
                 playlists?.map((playlist: Record<string, any>, i) => {
                   return (
-                    <Link
+                    <ListItem
                       key={playlist.id}
-                      className="flex flex-row gap-2 border border-white space-between mb-2 items-center pr-2 hover:bg-white hover:text-black transition-all relative p-4 h-[82px]"
                       href={`/playlist/${playlist.id}/edit`}
-                    >
-                      <div className="absolute px-1 py-0.5 bg-green-900 text-white text-xs top-0 left-0">
-                        {i + 1}
-                      </div>
-                      {playlist.name}
-                    </Link>
+                      name={playlist.name}
+                    />
                   );
                 })}
             </ul>

@@ -69,7 +69,7 @@ export default function Sidebar () {
           width="300px"
         >
           <div className="flex flex-col gap-y-4 w-full p-4 z-12 w-[30%] max-w-[300px] items-center">
-            {LINK_LIST.map(((link, i) => linkButton(link)))}
+            {LINK_LIST.map(((link, i) => linkButton(link, i)))}
             <button
               className="btn btn-error btn-outline"
               onClick={() => logout()}

@@ -2,9 +2,8 @@
 
 import { useState } from "react";
 import { useAuth } from "@/src/context/AuthContext";
-import Link from "next/link";
-import Image from "next/image";
 import { useSpotifyApi } from "@/src/hooks/useSpotifyApi";
+import ListItem from "../components/List/ListItem";
 
 
 export default function Search () {
@@ -73,24 +72,15 @@ export default function Search () {
                   <ul className="flex flex-col gap-2 w-full">
                     {items.map((item: Record<string, any>) => {
                       const image = getSmallestImage(item);
+                      const identifier = item.id || item.name;
+                      const href = `/artist/${identifier}`;
                       return (
-                        <li
-                          key={item.id || item.name}
-                          className="flex flex-row gap-2 border border-white space-between mb-2 items-center pr-2  pl-0 hover:bg-white hover:text-black cursor-pointer transition-all relative p-4 h-[82px]"
-                        >
-                          <Link href={`/artist/${item.id || item.name}`} className="flex items-center h-full">
-                            {image && (
-                              <Image
-                                src={image.url}
-                                height={image.height}
-                                width={image.width}
-                                className="w-20 h-20"
-                                alt={item.name}
-                              />
-                            )}
-                            <h3 className="text-lg ml-2">{item.name}</h3>
-                          </Link>
-                        </li>
+                        <ListItem
+                          name={item.name}
+                          href={href}
+                          image={image}
+                          key={item.name}
+                        ></ListItem>
                       );})}
                   </ul>
                 </div>

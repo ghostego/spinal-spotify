@@ -131,6 +131,7 @@ export const clearCache = () => {
 export const logout = () => {
   removeFromStorage("profile");
   removeFromStorage("refresh_token");
+  removeFromStorage("accessToken");
   clearCache();
 }
 
